@@ -7,11 +7,27 @@ import { useEffect, useState } from "react";
 const MyTown = (props) => {
   //   let tmp = 0;/z
   const [tmp, setTemp] = useState(0);
+  const [tmpInCelsius, setTempInCelsius] = useState(0);
+  const [buttonName, setButtonName] = useState("Convert to F");
+  const [celcius, setCelsius] = useState(true);
+  const convertToF = (e) => {
+    setButtonName("Convert to C");
+    let temp = tmp * (9 / 5) + 32;
+    setTemp(temp);
+    setCelsius(false);
+  };
+  const convertToC = (e) => {
+    setButtonName("Convert to F");
+    let temp = (tmp - 32) * (5 / 9);
+    setTemp(temp);
+    setCelsius(true);
+  };
   async function fetchTemperature() {
     let temp = await getWeather();
     temp = temp.temperature - 273.15;
     //console.log(temp);
     setTemp(temp);
+    setTempInCelsius(temp);
   }
   useEffect(() => {
     fetchTemperature();
@@ -28,17 +44,31 @@ const MyTown = (props) => {
         of Maharashtra state. It has been ranked "the most liveable city in
         India" several times
       </p>
-      {console.log(tmp)}
-      {tmp < 10 ? (
+      {tmpInCelsius < 10 ? (
         <img src={cold}></img>
-      ) : tmp > 10 && tmp < 20 ? (
+      ) : tmpInCelsius > 10 && tmpInCelsius < 20 ? (
         <img src={mild}></img>
       ) : (
         <img src={sunny}></img>
       )}
-      }
+      {celcius === true ? (
+        <div>
+          <h2>{Math.trunc(tmp)} &#8451;</h2>
+          <button className="App-link" onClick={(e) => convertToF()}>
+            {buttonName}
+          </button>
+        </div>
+      ) : (
+        <div>
+          <h2>{Math.trunc(tmp)} &#8457;</h2>
+          <button className="App-link" onClick={(e) => convertToC()}>
+            {buttonName}
+          </button>
+        </div>
+      )}
     </div>
   );
+
   async function getWeather() {
     try {
       let response = await fetch(
